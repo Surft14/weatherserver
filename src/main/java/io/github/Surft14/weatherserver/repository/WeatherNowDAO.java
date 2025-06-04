@@ -2,7 +2,6 @@ package io.github.Surft14.weatherserver.repository;
 
 
 import io.github.Surft14.weatherserver.model.WeatherNow;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;

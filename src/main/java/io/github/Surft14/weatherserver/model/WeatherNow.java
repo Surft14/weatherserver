@@ -21,4 +21,8 @@ public class WeatherNow {
     private Double feelLike;
     private String dir;
     private Double speed;
+
+    private String weather_text;
+    private String weather_url;
+    private Long weather_code;
 }
