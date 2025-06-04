@@ -15,4 +15,5 @@ public interface WeatherService {
     WeatherNow saveWeatherNow(WeatherNow weatherNow);
     WeatherNow updateWeatherNow(WeatherNow weatherNow);
     void deleteWeatherNow(WeatherNow weatherNow);
+    WeatherNow getWeatherNow(String city, String apiKey);
 }

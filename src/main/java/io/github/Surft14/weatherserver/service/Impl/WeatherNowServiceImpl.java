@@ -1,13 +1,17 @@
 package io.github.Surft14.weatherserver.service.Impl;
 
+import io.github.Surft14.weatherserver.model.WeatherApiResponse;
 import io.github.Surft14.weatherserver.model.WeatherNow;
 import io.github.Surft14.weatherserver.repository.WeatherRepository;
 import io.github.Surft14.weatherserver.service.WeatherService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +21,11 @@ import java.util.Optional;
 public class WeatherNowServiceImpl implements WeatherService {
 
     private WeatherRepository repository;
+
+    private final WebClient webClient = WebClient.create();
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
 
     @Override
     public Optional<WeatherNow> findWeatherNow(String city) {
@@ -47,10 +56,46 @@ public class WeatherNowServiceImpl implements WeatherService {
     public void deleteWeatherNow(WeatherNow weatherNow) {
         repository.delete(weatherNow);
     }
+    @Override
+    public WeatherNow getWeatherNow(String city, String apiKey){
 
-    public WeatherNow getWeatherNow(String city){
-        return null;
-        //TODO
+        String url = String.format("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", apiKey, city);
+
+        Mono<WeatherApiResponse> responseMono = webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(WeatherApiResponse.class);
+
+        WeatherApiResponse dto = responseMono.block();
+
+        if(dto == null){
+            throw new RuntimeException("Получен пустой ответ от WeatherAPI");
+        }
+
+        WeatherNow weatherNow = new WeatherNow();
+
+        weatherNow.setCity(dto.getLocation().getName());
+        weatherNow.setRegion(dto.getLocation().getRegion());
+        weatherNow.setCountry(dto.getLocation().getCountry());
+
+        LocalDateTime time = LocalDateTime.parse(dto.getLocation().getLocaltime(), FORMATTER);
+        weatherNow.setDateTime(time);
+
+        LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLastUpdate(), FORMATTER);
+        weatherNow.setLastUpdateTime(lastTime);
+
+        weatherNow.setWeather_text(dto.getCondition().getText());
+        weatherNow.setWeather_url(dto.getCondition().getIcon());
+        weatherNow.setWeather_code(dto.getCondition().getCode());
+
+        weatherNow.setTemp(dto.getCurrent().getTempC());
+        weatherNow.setFeelLike(dto.getCurrent().getFeelslikeC());
+        weatherNow.setSpeed(dto.getCurrent().getWindKph());
+        weatherNow.setDir(dto.getCurrent().getWindDir());
+
+
+
+        return weatherNow;
     }
 
 }

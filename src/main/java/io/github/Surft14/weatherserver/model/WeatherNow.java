@@ -15,7 +15,10 @@ public class WeatherNow {
     private Long id;
 
     private String city;
+    private String region;
+    private String country;
     private LocalDateTime dateTime;
+    private LocalDateTime lastUpdateTime;
 
     private Double temp;
     private Double feelLike;

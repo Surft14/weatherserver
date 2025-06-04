@@ -12,7 +12,7 @@
 	<artifactId>weatherserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>WeatherServer</name>
-	<description>Buffer server for weathere data</description>
+	<description>Buffer server for weather data</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -63,6 +63,10 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>3.0.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
