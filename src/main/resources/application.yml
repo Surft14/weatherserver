@@ -1,0 +1,19 @@
+#spring.application.name=WeatherServer
+
+spring:
+  application:
+    name: WeatherServer
+  datasource:
+    url: jdbc:mysql://localhost:3306/weatherdata_db?useSSL=false&serverTimezone=UTC&characterEncoding=utf8
+    username: root
+    password: (h/n)Nmdv7-d
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
