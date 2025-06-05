@@ -25,7 +25,7 @@ public class WeatherController {
         service.saveWeatherNow(weatherNow);
         return weatherNow;
     }
-    ///api/v1/weather_now/get/weather_now?city=London
+    ///api/v1/weathers_now/get/weather_now?city=London
     @GetMapping("/get/weather_now")
     public WeatherNow findWeatherNow(@RequestParam String city) {
         return service.findWeatherNow(city);
