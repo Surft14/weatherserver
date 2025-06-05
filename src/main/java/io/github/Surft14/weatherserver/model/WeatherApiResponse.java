@@ -7,7 +7,7 @@ import lombok.Data;
 public class WeatherApiResponse {
     private Location location;
     private Current current;
-    private Current.Condition condition;
+
 
     @Data
     public static class Location {
@@ -21,6 +21,8 @@ public class WeatherApiResponse {
 
     @Data
     public static class Current {
+
+        private Condition condition;
 
         @Data
         public static class Condition {

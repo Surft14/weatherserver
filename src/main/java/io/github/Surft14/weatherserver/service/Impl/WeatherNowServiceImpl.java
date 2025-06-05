@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -58,7 +57,7 @@ public class WeatherNowServiceImpl implements WeatherService {
     }
 
     @Override
-    public WeatherNow getWeatherNow(String city, String apiKey){
+    public WeatherNow getWeatherNow(String city, String apiKey) {
 
         String url = String.format("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", apiKey, city);
 
@@ -69,7 +68,7 @@ public class WeatherNowServiceImpl implements WeatherService {
 
         WeatherApiResponse dto = responseMono.block();
 
-        if(dto == null){
+        if (dto == null) {
             throw new RuntimeException("Получен пустой ответ от WeatherAPI");
         }
 
@@ -85,15 +84,14 @@ public class WeatherNowServiceImpl implements WeatherService {
         LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLastUpdate(), FORMATTER);
         weatherNow.setLastUpdateTime(lastTime);
 
-        weatherNow.setWeather_text(dto.getCondition().getText());
-        weatherNow.setWeather_url(dto.getCondition().getIcon());
-        weatherNow.setWeather_code(dto.getCondition().getCode());
+        weatherNow.setWeather_text(dto.getCurrent().getCondition().getText());
+        weatherNow.setWeather_url(dto.getCurrent().getCondition().getIcon());
+        weatherNow.setWeather_code(dto.getCurrent().getCondition().getCode());
 
         weatherNow.setTemp(dto.getCurrent().getTempC());
         weatherNow.setFeelLike(dto.getCurrent().getFeelslikeC());
         weatherNow.setSpeed(dto.getCurrent().getWindKph());
         weatherNow.setDir(dto.getCurrent().getWindDir());
-
 
 
         return weatherNow;
