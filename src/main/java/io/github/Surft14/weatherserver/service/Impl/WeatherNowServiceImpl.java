@@ -28,7 +28,7 @@ public class WeatherNowServiceImpl implements WeatherService {
 
 
     @Override
-    public Optional<WeatherNow> findWeatherNow(String city) {
+    public WeatherNow findWeatherNow(String city) {
         return repository.getWeatherNow(city);
     }
 
@@ -56,6 +56,7 @@ public class WeatherNowServiceImpl implements WeatherService {
     public void deleteWeatherNow(WeatherNow weatherNow) {
         repository.delete(weatherNow);
     }
+
     @Override
     public WeatherNow getWeatherNow(String city, String apiKey){
 
