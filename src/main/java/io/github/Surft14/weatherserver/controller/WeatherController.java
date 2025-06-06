@@ -21,17 +21,6 @@ public class WeatherController {
     private WeatherService weatherService;
     private CityService cityService;
 
-
-    @GetMapping("/get/db/city/city_table")
-    public City getCity(@RequestParam String city){
-        return cityService.findTopByName(city);
-    }
-
-    @GetMapping("/get/db/city_table")
-    public List<City> getAllCity(){
-        return cityService.getAllCity();
-    }
-
     @GetMapping("/get/fwa/city_apiKey/weather_now")
     ///api/v1/weathers_now/get/fwa/city_apiKey/weather_now?city=London&apiKey=your_api_key
     public WeatherNow getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey){
@@ -70,16 +59,6 @@ public class WeatherController {
         return weatherService.findByCityAndDateTime(city, time);
     }
 
-    @PutMapping("/put/db/save/city_table")
-    public City saveCity(@RequestBody City city){
-        return cityService.saveCity(city);
-    }
-
-    @PutMapping("/put/db/update/city_table")
-    public City updateCity(@RequestBody City city){
-        return cityService.updateCity(city);
-    }
-
     @PutMapping("/put/db/save/weather_now")
     public WeatherNow saveWeatherNow(@RequestBody WeatherNow weatherNow) {
         return weatherService.saveWeatherNow(weatherNow);
@@ -88,11 +67,6 @@ public class WeatherController {
     @PutMapping("/put/db/update/weather_now")
     public WeatherNow updateWeatherNow(@RequestBody WeatherNow weatherNow) {
         return weatherService.updateWeatherNow(weatherNow);
-    }
-
-    @DeleteMapping("/delete/db/city_table")
-    public void deleteCity(@RequestBody City city){
-        cityService.deleteCity(city);
     }
 
     @DeleteMapping("/delete/db/weather_now")
