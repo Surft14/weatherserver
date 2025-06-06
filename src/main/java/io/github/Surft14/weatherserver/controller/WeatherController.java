@@ -18,41 +18,41 @@ public class WeatherController {
 
     private WeatherService service;
 
-    @GetMapping("/get/weather_now")
-    ///api/v1/weathers_now/get/weather_now?city=London&apiKey=your_api_key
-    public WeatherNow getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey) {
+    @GetMapping("/get/fwa/city_apiKey/weather_now")
+    ///api/v1/weathers_now/get/fwa/city_apiKey/weather_now?city=London&apiKey=your_api_key
+    public WeatherNow getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey){
         WeatherNow weatherNow = service.getWeatherNow(city, apiKey);
         service.saveWeatherNow(weatherNow);
         return weatherNow;
     }
-    ///api/v1/weathers_now/get/weather_now?city=London
-    @GetMapping("/get/weather_now")
+    ///api/v1/weathers_now/get/db/city/weather_now?city=London
+    @GetMapping("/get/db/city/weather_now")
     public WeatherNow findWeatherNow(@RequestParam String city) {
         return service.findWeatherNow(city);
     }
     ///api/v1/weathers_now/get/weather_now?city=London
-    @GetMapping("/get/list_weather_now")
+    @GetMapping("/get/db/city/list_weather_now")
     public List<WeatherNow> findByCity(@RequestParam String city) {
         return service.findByCity(city);
     }
 
-    @GetMapping("/get/list_weather_now")
-    ///api/v1/weathers_now/get/weathers_now?city=London&time=2025-06-04T15:00:00
+    @GetMapping("/get/db/city_time/list_weather_now")
+    ///api/v1/weathers_now/get/db/city_time/list_weather_now?city=London&time=2025-06-04T15:00:00
     public List<WeatherNow> findByCityAndTime(@RequestParam String city, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime time) {
         return service.findByCityAndDateTime(city, time);
     }
 
-    @PutMapping("/put/save_weather_now")
+    @PutMapping("/put/db/save_weather_now")
     public WeatherNow saveWeatherNow(@RequestBody WeatherNow weatherNow) {
         return service.saveWeatherNow(weatherNow);
     }
 
-    @PutMapping("/put/update_weather_now")
+    @PutMapping("/put/db/update_weather_now")
     public WeatherNow updateWeatherNow(@RequestBody WeatherNow weatherNow) {
         return service.updateWeatherNow(weatherNow);
     }
 
-    @DeleteMapping("/delete/weather_now")
+    @DeleteMapping("/delete/db/weather_now")
     public void deleteWeatherNow(@RequestBody WeatherNow weatherNow) {
         service.deleteWeatherNow(weatherNow);
     }

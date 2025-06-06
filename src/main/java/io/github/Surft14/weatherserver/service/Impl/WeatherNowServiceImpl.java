@@ -28,7 +28,7 @@ public class WeatherNowServiceImpl implements WeatherService {
 
     @Override
     public WeatherNow findWeatherNow(String city) {
-        return repository.getWeatherNow(city);
+        return repository.findTopByCityOrderByDateTimeDesc(city);
     }
 
     @Override
