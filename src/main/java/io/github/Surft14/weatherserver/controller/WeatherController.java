@@ -35,6 +35,12 @@ public class WeatherController {
     @GetMapping("/get/fwa/city_apiKey/weather_now")
     ///api/v1/weathers_now/get/fwa/city_apiKey/weather_now?city=London&apiKey=your_api_key
     public WeatherNow getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey){
+        City city1 = cityService.findTopByName(city);
+        if (city1 == null){
+            City tempCity = new City();
+            tempCity.setName(city);
+            cityService.saveCity(tempCity);
+        }
         WeatherNow weatherNow = weatherService.getWeatherNow(city, apiKey);
         weatherService.saveWeatherNow(weatherNow);
         return weatherNow;
@@ -42,6 +48,14 @@ public class WeatherController {
     ///api/v1/weathers_now/get/db/city/weather_now?city=London
     @GetMapping("/get/db/city/weather_now")
     public WeatherNow findWeatherNow(@RequestParam String city) {
+        City city1 = cityService.findTopByName(city);
+        if (city1 == null){
+            City tempCity = new City();
+            tempCity.setName(city);
+            cityService.saveCity(tempCity);
+            WeatherNow now = weatherService.getWeatherNow(city, "e484c70c78e84b779ab151237251002");
+            weatherService.saveWeatherNow(now);
+        }
         return weatherService.findWeatherNow(city);
     }
     ///api/v1/weathers_now/get/weather_now?city=London
