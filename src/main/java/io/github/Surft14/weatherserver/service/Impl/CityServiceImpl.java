@@ -19,9 +19,12 @@ public class CityServiceImpl implements CityService {
     @PostConstruct
     public void init() {
         if (repository.count() == 0) {
-            City city = new City();
-            city.setName("Cheboksary");
-            repository.save(city);
+            City cityCheboksary = new City();
+            City cityMoscow = new City();
+            cityMoscow.setName("Moscow");
+            cityCheboksary.setName("Cheboksary");
+            repository.save(cityCheboksary);
+            repository.save(cityMoscow);
         }
     }
 

@@ -1,6 +1,6 @@
 package io.github.Surft14.weatherserver.service.Impl;
 
-import io.github.Surft14.weatherserver.model.WeatherApiResponse;
+import io.github.Surft14.weatherserver.model.api.WeatherApiResponse;
 import io.github.Surft14.weatherserver.model.WeatherNow;
 import io.github.Surft14.weatherserver.repository.WeatherRepository;
 import io.github.Surft14.weatherserver.service.WeatherService;
