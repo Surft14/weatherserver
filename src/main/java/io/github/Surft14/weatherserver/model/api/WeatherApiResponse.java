@@ -1,55 +1,66 @@
 package io.github.Surft14.weatherserver.model.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class WeatherApiResponse {
     private Location location;
     private Current current;
-
+    private Forecast forecast;
 
     @Data
     public static class Location {
         private String name;
         private String region;
         private String country;
-        // В API возвращается строка "2025-06-04 14:16"
-        @JsonProperty("localtime")
+        private String tz_id;
         private String localtime;
     }
 
     @Data
     public static class Current {
-
+        private String last_updated;
+        private double temp_c;
         private Condition condition;
+        private double wind_kph;
+        private String wind_dir;
+        private double feelslike_c;
+    }
 
-        @Data
-        public static class Condition {
-            @JsonProperty("text")
-            private String text;
+    @Data
+    public static class Condition {
+        private String text;
+        private String icon;
+        private long code;
+    }
 
-            @JsonProperty("icon")
-            private String icon;
+    @Data
+    public static class Forecast {
+        private List<ForecastDay> forecastday;
+    }
 
-            @JsonProperty("code")
-            private Long code;
-        }
+    @Data
+    public static class ForecastDay {
+        private String date;
+        private Day day;
+        private List<Hour> hour;
+    }
 
-        @JsonProperty("last_updated")
-        private String lastUpdate;
+    @Data
+    public static class Day {
+        private double maxwind_mph;
+        private Condition condition;
+    }
 
-        @JsonProperty("temp_c")
-        private Double tempC;
-
-        @JsonProperty("feelslike_c")
-        private Double feelslikeC;
-
-        @JsonProperty("wind_kph")
-        private Double windKph;
-
-        @JsonProperty("wind_dir")
-        private String windDir;
-
+    @Data
+    public static class Hour {
+        private String time;
+        private double temp_c;
+        private Condition condition;
+        private double wind_kph;
+        private String wind_dir;
+        private double feelslike_c;
     }
 }

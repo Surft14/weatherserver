@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,4 +30,9 @@ public class WeatherNow {
     private String weather_text;
     private String weather_url;
     private Long weather_code;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "weather_now_id")
+    private List<WeatherHour> listHour = new ArrayList<>();
+
 }

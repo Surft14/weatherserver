@@ -1,5 +1,7 @@
 #spring.application.name=WeatherServer
 #serverTimezone=UTC&
+server:
+  port: 8081
 spring:
   application:
     name: WeatherServer
