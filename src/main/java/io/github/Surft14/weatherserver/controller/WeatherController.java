@@ -24,6 +24,7 @@ public class WeatherController {
     @GetMapping("/get/fwa/city_apiKey/weather_now")
     ///api/v1/weathers_now/get/fwa/city_apiKey/weather_now?city=London&apiKey=your_api_key
     public WeatherNow getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather getWeatherNow, " + city);
         City city1 = cityService.findTopByName(city);
         if (city1 == null){
             City tempCity = new City();
@@ -37,6 +38,7 @@ public class WeatherController {
     ///api/v1/weathers_now/get/db/city/weather_now?city=London
     @GetMapping("/get/db/city/weather_now")
     public WeatherNow findWeatherNow(@RequestParam String city) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findWeatherNow, " + city);
         City city1 = cityService.findTopByName(city);
         if (city1 == null){
             City tempCity = new City();
@@ -50,27 +52,32 @@ public class WeatherController {
     ///api/v1/weathers_now/get/weather_now?city=London
     @GetMapping("/get/db/city/list_weather_now")
     public List<WeatherNow> findByCity(@RequestParam String city) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCity, " + city);
         return weatherService.findByCity(city);
     }
 
     @GetMapping("/get/db/city_time/list_weather_now")
     ///api/v1/weathers_now/get/db/city_time/list_weather_now?city=London&time=2025-06-04T15:00:00
     public List<WeatherNow> findByCityAndTime(@RequestParam String city, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime time) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCity, " + city + ", " + time);
         return weatherService.findByCityAndDateTime(city, time);
     }
 
     @PutMapping("/put/db/save/weather_now")
     public WeatherNow saveWeatherNow(@RequestBody WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather saveWeatherNow, " + weatherNow);
         return weatherService.saveWeatherNow(weatherNow);
     }
 
     @PutMapping("/put/db/update/weather_now")
     public WeatherNow updateWeatherNow(@RequestBody WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather updateWeatherNow, " + weatherNow);
         return weatherService.updateWeatherNow(weatherNow);
     }
 
     @DeleteMapping("/delete/db/weather_now")
     public void deleteWeatherNow(@RequestBody WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather deleteWeatherNow, " + weatherNow);
         weatherService.deleteWeatherNow(weatherNow);
     }
 

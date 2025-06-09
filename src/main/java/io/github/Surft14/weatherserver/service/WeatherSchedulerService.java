@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,12 +24,14 @@ public class WeatherSchedulerService {
 
     @Async("weatherExecutor")
     public void fetchAndSaveWeather(String city, String apiKey){
+        System.out.println(LocalDateTime.now() + "  INFO: Weather fetchAndSaveWeather, " + city);
         WeatherNow weatherNow = weatherService.getWeatherNow(city, apiKey);
         weatherService.saveWeatherNow(weatherNow);
     }
 
     @Scheduled(fixedRate = 30 * 60 * 1000)
     public void fetchWeatherPeriodically(){
+        System.out.println(LocalDateTime.now() + "  INFO: Weather fetchWeatherPeriodically, " + city);
         List<City> cityList = cityService.getAllCity();
         try {
             for (City city : cityList) {

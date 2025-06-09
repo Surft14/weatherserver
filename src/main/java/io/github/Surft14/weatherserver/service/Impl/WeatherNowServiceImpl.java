@@ -34,36 +34,45 @@ public class WeatherNowServiceImpl implements WeatherService {
 
     @Override
     public WeatherNow findWeatherNow(String city) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findWeatherNow, " + city);
         return repository.findTopByCityOrderByDateTimeDesc(city);
     }
 
     @Override
     public List<WeatherNow> findByCity(String city) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCity, " + city);
         return repository.findByCity(city);
     }
 
     @Override
     public List<WeatherNow> findByCityAndDateTime(String city, LocalDateTime dateTime) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDateTime, " + city + ", " + dateTime);
         return repository.findByCityAndDateTime(city, dateTime);
     }
 
     @Override
     public WeatherNow saveWeatherNow(WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather save, " + weatherNow.getCity());
         return repository.save(weatherNow);
     }
 
     @Override
     public WeatherNow updateWeatherNow(WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather update, " + weatherNow.getCity());
         return repository.save(weatherNow);
     }
 
     @Override
     public void deleteWeatherNow(WeatherNow weatherNow) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather delete, " + weatherNow.getCity());
         repository.delete(weatherNow);
     }
 
     @Override
     public WeatherNow getWeatherNow(String city, String apiKey) {
+
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + city);
+
         //http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=1&aqi=no&alerts=no
         String url = String.format("http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=4&aqi=no&alerts=no", apiKey, city);
 
@@ -130,11 +139,14 @@ public class WeatherNowServiceImpl implements WeatherService {
     }
 
     public List<Weathers> getListWeathers(WeatherApiResponse dto) {
+
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getListWeathers, " + dto.getLocation().getName());
+
         List<Weathers> weathersList = new ArrayList<>();
         int i = 0;
         for (WeatherApiResponse.ForecastDay forecastDay: dto.getForecast().getForecastday()){
             i ++;
-            System.out.println("Day " + i + ", " + dto.getLocation().getName());
+            System.out.println(LocalDateTime.now() + "  INFO: Day " + i + ", " + dto.getLocation().getName());
             Weathers weathers = new Weathers();
 
             weathers.setCity(dto.getLocation().getName());
@@ -144,7 +156,7 @@ public class WeatherNowServiceImpl implements WeatherService {
             weathers.setDate(localDate);
 
             weathers.setAvgTemp(forecastDay.getDay().getAvgtemp_c());
-            weathers.setMaxWind(forecastDay.getDay().getMaxwind_mph());
+            weathers.setMaxWind(forecastDay.getDay().getMaxwind_kph());
 
             weathers.setText(forecastDay.getDay().getCondition().getText());
             weathers.setIcon(forecastDay.getDay().getCondition().getIcon());

@@ -51,7 +51,7 @@ public class WeatherApiResponse {
     @Data
     public static class Day {
         private double avgtemp_c;
-        private double maxwind_mph;
+        private double maxwind_kph;
         private Condition condition;
     }
 
