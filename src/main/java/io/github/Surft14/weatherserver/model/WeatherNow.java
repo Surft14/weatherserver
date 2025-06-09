@@ -27,12 +27,12 @@ public class WeatherNow {
     private String dir;
     private Double speed;
 
-    private String weather_text;
-    private String weather_url;
-    private Long weather_code;
+    private String text;
+    private String icon;
+    private Long code;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "weather_now_id")
+    @JoinColumn(name = "weather_now_id", referencedColumnName = "id")
     private List<WeatherHour> listHour = new ArrayList<>();
 
 }

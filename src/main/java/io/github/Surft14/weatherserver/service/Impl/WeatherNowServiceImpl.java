@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,7 +26,7 @@ public class WeatherNowServiceImpl implements WeatherService {
     private final WebClient webClient = WebClient.create();
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
 
     @Override
     public WeatherNow findWeatherNow(String city) {
@@ -85,9 +86,9 @@ public class WeatherNowServiceImpl implements WeatherService {
         LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLast_updated(), DATE_TIME_FORMATTER);
         weatherNow.setLastUpdateTime(lastTime);
 
-        weatherNow.setWeather_text(dto.getCurrent().getCondition().getText());
-        weatherNow.setWeather_url(dto.getCurrent().getCondition().getIcon());
-        weatherNow.setWeather_code(dto.getCurrent().getCondition().getCode());
+        weatherNow.setText(dto.getCurrent().getCondition().getText());
+        weatherNow.setIcon(dto.getCurrent().getCondition().getIcon());
+        weatherNow.setCode(dto.getCurrent().getCondition().getCode());
 
         weatherNow.setTemp(dto.getCurrent().getTemp_c());
         weatherNow.setFeelLike(dto.getCurrent().getFeelslike_c());
@@ -98,7 +99,12 @@ public class WeatherNowServiceImpl implements WeatherService {
         for(WeatherApiResponse.Hour hour : dto.getForecast().getForecastday().get(0).getHour()){
             WeatherHour weatherHour = new WeatherHour();
 
-            weatherHour.setTime(LocalDateTime.parse(hour.getTime(), DATE_TIME_FORMATTER));
+            LocalDateTime localDateTime = LocalDateTime.parse(hour.getTime(), DATE_TIME_FORMATTER);
+
+            weatherHour.setCity(dto.getLocation().getName());
+
+            weatherHour.setTime(localDateTime.toLocalTime());
+            weatherHour.setDate(localDateTime.toLocalDate());
 
             weatherHour.setText(hour.getCondition().getText());
             weatherHour.setIcon(hour.getCondition().getIcon());

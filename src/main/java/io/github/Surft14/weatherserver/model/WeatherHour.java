@@ -4,7 +4,9 @@ package io.github.Surft14.weatherserver.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Entity
@@ -14,7 +16,10 @@ public class WeatherHour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime time;
+    private String city;
+
+    private LocalTime time;
+    private LocalDate date;
 
     private Double temp;
     private Double feelLike;
