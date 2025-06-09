@@ -35,4 +35,8 @@ public class WeatherNow {
     @JoinColumn(name = "weather_now_id", referencedColumnName = "id")
     private List<WeatherHour> listHour = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "weather_now_id", referencedColumnName = "id")
+    private List<Weathers> weathersList = new ArrayList<>();
+
 }

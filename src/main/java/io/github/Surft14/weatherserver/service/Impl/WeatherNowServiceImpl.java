@@ -1,6 +1,7 @@
 package io.github.Surft14.weatherserver.service.Impl;
 
 import io.github.Surft14.weatherserver.model.WeatherHour;
+import io.github.Surft14.weatherserver.model.Weathers;
 import io.github.Surft14.weatherserver.model.api.WeatherApiResponse;
 import io.github.Surft14.weatherserver.model.WeatherNow;
 import io.github.Surft14.weatherserver.repository.WeatherRepository;
@@ -11,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.Console;
 import java.text.DateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,7 +65,7 @@ public class WeatherNowServiceImpl implements WeatherService {
     @Override
     public WeatherNow getWeatherNow(String city, String apiKey) {
         //http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=1&aqi=no&alerts=no
-        String url = String.format("http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=1&aqi=no&alerts=no", apiKey, city);
+        String url = String.format("http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=4&aqi=no&alerts=no", apiKey, city);
 
         Mono<WeatherApiResponse> responseMono = webClient.get()
                 .uri(url)
@@ -119,8 +123,37 @@ public class WeatherNowServiceImpl implements WeatherService {
             weatherNow.getListHour().add(weatherHour);
         }
 
+        List<Weathers> weathersList = getListWeathers(dto);
+        weatherNow.setWeathersList(weathersList);
 
         return weatherNow;
     }
+
+    public List<Weathers> getListWeathers(WeatherApiResponse dto) {
+        List<Weathers> weathersList = new ArrayList<>();
+        int i = 0;
+        for (WeatherApiResponse.ForecastDay forecastDay: dto.getForecast().getForecastday()){
+            i ++;
+            System.out.println("Day " + i + ", " + dto.getLocation().getName());
+            Weathers weathers = new Weathers();
+
+            weathers.setCity(dto.getLocation().getName());
+
+            LocalDate localDate = LocalDate.parse(forecastDay.getDate());
+
+            weathers.setDate(localDate);
+
+            weathers.setAvgTemp(forecastDay.getDay().getAvgtemp_c());
+            weathers.setMaxWind(forecastDay.getDay().getMaxwind_mph());
+
+            weathers.setText(forecastDay.getDay().getCondition().getText());
+            weathers.setIcon(forecastDay.getDay().getCondition().getIcon());
+            weathers.setCode(forecastDay.getDay().getCondition().getCode());
+
+            weathersList.add(weathers);
+        }
+        return weathersList;
+    }
+
 
 }
