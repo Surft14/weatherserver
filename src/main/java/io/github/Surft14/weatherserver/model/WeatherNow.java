@@ -19,6 +19,7 @@ public class WeatherNow {
     private String city;
     private String region;
     private String country;
+
     private LocalDateTime dateTime;
     private LocalDateTime lastUpdateTime;
 
