@@ -19,10 +19,9 @@ public class WeatherSchedulerService {
 
     private final CityService cityService;
 
-    private final String city = "Cheboksary";
     private final String apiKey = "e484c70c78e84b779ab151237251002";
 
-    @Async("weatherExecutor")
+    //@Async("weatherExecutor")
     public void fetchAndSaveWeather(String city, String apiKey){
         System.out.println(LocalDateTime.now() + "  INFO: Weather fetchAndSaveWeather, " + city);
         WeatherNow weatherNow = weatherService.getWeatherNow(city, apiKey);
@@ -31,14 +30,13 @@ public class WeatherSchedulerService {
 
     @Scheduled(fixedRate = 30 * 60 * 1000)
     public void fetchWeatherPeriodically(){
-        System.out.println(LocalDateTime.now() + "  INFO: Weather fetchWeatherPeriodically, " + city);
+
         List<City> cityList = cityService.getAllCity();
         try {
             for (City city : cityList) {
+                System.out.println(LocalDateTime.now() + "  INFO: Weather fetchWeatherPeriodically, " + city);
                 fetchAndSaveWeather(city.getName(), apiKey);
             }
-            /*WeatherNow weather = weatherService.getWeatherNow(city, apiKey);
-            weatherService.saveWeatherNow(weather);*/
         } catch (Exception e) {
             System.err.println("Error at update weather: " + e.getMessage());
         }

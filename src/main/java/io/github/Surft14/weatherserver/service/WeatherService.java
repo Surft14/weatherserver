@@ -1,7 +1,6 @@
 package io.github.Surft14.weatherserver.service;
 
 import io.github.Surft14.weatherserver.model.WeatherNow;
-import io.github.Surft14.weatherserver.model.Weathers;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

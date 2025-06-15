@@ -4,12 +4,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.time.LocalDateTime;
+
 @SpringBootApplication
 @EnableScheduling
 public class WeatherServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WeatherServerApplication.class, args);
+		try{
+			SpringApplication.run(WeatherServerApplication.class, args);
+		} catch (Exception e) {
+			System.out.println(LocalDateTime.now() + "  ERROR: " + e.getMessage());
+		}
 	}
 
 }
