@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -24,21 +25,23 @@ public class WeatherSchedulerService {
     @Async("weatherExecutor")
     public void fetchAndSaveWeather(String city, String apiKey){
         System.out.println(LocalDateTime.now() + "  INFO: Weather fetchAndSaveWeather, " + city);
-        WeatherNow weatherNow = weatherService.getWeatherNow(city, apiKey);
-        weatherService.saveWeatherNow(weatherNow);
+        CompletableFuture<WeatherNow> future = weatherService.getWeatherNow(city, apiKey);
+        future.thenAccept(weatherService::saveWeatherNow);
     }
     @Async("weatherExecutor")
     @Scheduled(fixedRate = 30 * 60 * 1000)
     public void fetchWeatherPeriodically(){
 
-        List<City> cityList = cityService.getAllCity();
-        try {
-            for (City city : cityList) {
-                System.out.println(LocalDateTime.now() + "  INFO: Weather fetchWeatherPeriodically, " + city);
-                fetchAndSaveWeather(city.getName(), apiKey);
+        CompletableFuture<List<City>> future = cityService.getAllCity();
+        future.thenAccept(cityList -> {
+            try {
+                for (City city : cityList) {
+                    System.out.println(LocalDateTime.now() + "  INFO: Weather fetchWeatherPeriodically, " + city);
+                    fetchAndSaveWeather(city.getName(), apiKey);
+                }
+            } catch (Exception e) {
+                System.err.println("Error at update weather: " + e.getMessage());
             }
-        } catch (Exception e) {
-            System.err.println("Error at update weather: " + e.getMessage());
-        }
+        });
     }
 }
