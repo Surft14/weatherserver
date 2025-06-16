@@ -4,16 +4,17 @@ import io.github.Surft14.weatherserver.model.City;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface CityService {
-    City findTopByName(String name);
+    CompletableFuture<City> findTopByName(String name);
 
-    List<City> getAllCity();
+    CompletableFuture<List<City>> getAllCity();
 
-    City saveCity(City city);
+    CompletableFuture<City> saveCity(City city);
 
-    City updateCity(City city);
+    CompletableFuture<City> updateCity(City city);
 
     void deleteCity(City city);
 }

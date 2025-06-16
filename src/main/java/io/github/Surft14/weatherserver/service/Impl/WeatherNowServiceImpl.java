@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+@Async("weatherExecutor")
 @Service
 @AllArgsConstructor
 @Primary
@@ -32,33 +34,33 @@ public class WeatherNowServiceImpl implements WeatherService {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
-    public WeatherNow findWeatherNow(String city) {
+    public CompletableFuture<WeatherNow> findWeatherNow(String city) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather findWeatherNow, " + city);
-        return repository.findTopByCityOrderByDateTimeDesc(city);
+        return CompletableFuture.completedFuture(repository.findTopByCityOrderByDateTimeDesc(city));
     }
 
     @Override
-    public List<WeatherNow> findByCity(String city) {
+    public CompletableFuture<List<WeatherNow>> findByCity(String city) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCity, " + city);
-        return repository.findByCity(city);
+        return CompletableFuture.completedFuture(repository.findByCity(city));
     }
 
     @Override
-    public List<WeatherNow> findByCityAndDateTime(String city, LocalDateTime dateTime) {
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateTime(String city, LocalDateTime dateTime) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDateTime, " + city + ", " + dateTime);
-        return repository.findByCityAndDateTime(city, dateTime);
+        return CompletableFuture.completedFuture(repository.findByCityAndDateTime(city, dateTime));
     }
 
     @Override
-    public WeatherNow saveWeatherNow(WeatherNow weatherNow) {
+    public CompletableFuture<WeatherNow> saveWeatherNow(WeatherNow weatherNow) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather save, " + weatherNow.getCity());
-        return repository.save(weatherNow);
+        return CompletableFuture.completedFuture(repository.save(weatherNow));
     }
 
     @Override
-    public WeatherNow updateWeatherNow(WeatherNow weatherNow) {
+    public CompletableFuture<WeatherNow> updateWeatherNow(WeatherNow weatherNow) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather update, " + weatherNow.getCity());
-        return repository.save(weatherNow);
+        return CompletableFuture.completedFuture(repository.save(weatherNow));
     }
 
     @Override
@@ -66,9 +68,9 @@ public class WeatherNowServiceImpl implements WeatherService {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather delete, " + weatherNow.getCity());
         repository.delete(weatherNow);
     }
-
+    @Async("weatherExecutor")
     @Override
-    public WeatherNow getWeatherNow(String city, String apiKey) {
+    public CompletableFuture<WeatherNow> getWeatherNow(String city, String apiKey) {
 
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow start, " + city);
 
@@ -113,21 +115,27 @@ public class WeatherNowServiceImpl implements WeatherService {
         weatherNow.setSpeed(dto.getCurrent().getWind_kph());
         weatherNow.setDir(dto.getCurrent().getWind_dir());
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getFeelLike() + " " + weatherNow.getSpeed() + " " + weatherNow.getDir());
-
-        List<WeatherHour> list = getListWeatherHour(dto);
-        weatherNow.setListHour(list);
-
-        List<WeatherForecast> weathersList = getListWeatherForecast(dto);
-        weatherNow.setWeathersList(weathersList);
-
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow end, " + city);
 
-        return weatherNow;
-    }
+        CompletableFuture<List<WeatherHour>> hoursFuture = getListWeatherHour(dto);
+        CompletableFuture<List<WeatherForecast>> forecastFuture = getListWeatherForecast(dto);
 
-    public List<WeatherHour> getListWeatherHour(WeatherApiResponse dto){
+        return hoursFuture.thenCombine(forecastFuture, (hours, forecasts) -> {
+            weatherNow.setListHour(hours);
+            weatherNow.setWeathersList(forecasts);
+            return weatherNow;
+        });
+
+
+
+    }
+    @Async("weatherExecutor")
+    public CompletableFuture<List<WeatherHour>> getListWeatherHour(WeatherApiResponse dto){
         List<WeatherHour> list = new ArrayList<WeatherHour>();
+        int i = 0;
         for(WeatherApiResponse.Hour hour : dto.getForecast().getForecastday().get(0).getHour()){
+            i++;
+            System.out.println(LocalDateTime.now() + "  INFO: Hour " + i + ", " + dto.getLocation().getName());
             WeatherHour weatherHour = new WeatherHour();
 
             LocalDateTime localDateTime = LocalDateTime.parse(hour.getTime(), DATE_TIME_FORMATTER);
@@ -150,10 +158,10 @@ public class WeatherNowServiceImpl implements WeatherService {
 
             list.add(weatherHour);
         }
-        return list;
+        return CompletableFuture.completedFuture(list);
     }
-
-    public List<WeatherForecast> getListWeatherForecast(WeatherApiResponse dto) {
+    @Async("weatherExecutor")
+    public CompletableFuture<List<WeatherForecast>> getListWeatherForecast(WeatherApiResponse dto) {
 
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getListWeatherForecast, " + dto.getLocation().getName());
 
@@ -179,7 +187,7 @@ public class WeatherNowServiceImpl implements WeatherService {
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weathers.getText() + " " + weathers.getIcon() + " " + weathers.getCode());
             weathersList.add(weathers);
         }
-        return weathersList;
+        return CompletableFuture.completedFuture(weathersList);
     }
 
 

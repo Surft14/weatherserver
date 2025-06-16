@@ -6,9 +6,12 @@ import io.github.Surft14.weatherserver.service.CityService;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+@Async("weatherExecutor")
 @Service
 @AllArgsConstructor
 @Primary
@@ -20,32 +23,29 @@ public class CityServiceImpl implements CityService {
     public void init() {
         if (repository.count() == 0) {
             City cityCheboksary = new City();
-            City cityMoscow = new City();
-            cityMoscow.setName("Moscow");
             cityCheboksary.setName("Cheboksary");
             repository.save(cityCheboksary);
-            repository.save(cityMoscow);
         }
     }
 
     @Override
-    public City findTopByName(String name) {
-        return repository.findFirstByName(name);
+    public CompletableFuture<City> findTopByName(String name) {
+        return CompletableFuture.completedFuture(repository.findFirstByName(name));
     }
 
     @Override
-    public List<City> getAllCity() {
-        return repository.getAllCity();
+    public CompletableFuture<List<City>> getAllCity() {
+        return CompletableFuture.completedFuture(repository.getAllCity());
     }
 
     @Override
-    public City saveCity(City city) {
-        return repository.save(city);
+    public CompletableFuture<City> saveCity(City city) {
+        return CompletableFuture.completedFuture(repository.save(city));
     }
 
     @Override
-    public City updateCity(City city) {
-        return repository.save(city);
+    public CompletableFuture<City> updateCity(City city) {
+        return CompletableFuture.completedFuture(repository.save(city));
     }
 
     @Override

@@ -21,13 +21,13 @@ public class WeatherSchedulerService {
 
     private final String apiKey = "e484c70c78e84b779ab151237251002";
 
-    //@Async("weatherExecutor")
+    @Async("weatherExecutor")
     public void fetchAndSaveWeather(String city, String apiKey){
         System.out.println(LocalDateTime.now() + "  INFO: Weather fetchAndSaveWeather, " + city);
         WeatherNow weatherNow = weatherService.getWeatherNow(city, apiKey);
         weatherService.saveWeatherNow(weatherNow);
     }
-
+    @Async("weatherExecutor")
     @Scheduled(fixedRate = 30 * 60 * 1000)
     public void fetchWeatherPeriodically(){
 

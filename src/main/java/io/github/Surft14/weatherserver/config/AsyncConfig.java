@@ -15,8 +15,8 @@ public class AsyncConfig {
     public Executor taskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(5);
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(6);
         executor.setQueueCapacity(60);
         executor.setThreadNamePrefix("Weather-");
         executor.initialize();
