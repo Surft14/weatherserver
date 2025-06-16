@@ -32,11 +32,11 @@ public class WeatherNow {
     private String icon;
     private Long code;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "weather_now_id", referencedColumnName = "id")
     private List<WeatherHour> listHour = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "weather_now_id", referencedColumnName = "id")
     private List<WeatherForecast> weathersList = new ArrayList<>();
 

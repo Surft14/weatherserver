@@ -7,6 +7,8 @@ import io.github.Surft14.weatherserver.model.WeatherNow;
 import io.github.Surft14.weatherserver.repository.WeatherRepository;
 import io.github.Surft14.weatherserver.service.WeatherService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class WeatherNowServiceImpl implements WeatherService {
     private WeatherRepository repository;
 
     private final WebClient webClient = WebClient.create();
+
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -71,65 +74,74 @@ public class WeatherNowServiceImpl implements WeatherService {
     @Async("weatherExecutor")
     @Override
     public CompletableFuture<WeatherNow> getWeatherNow(String city, String apiKey) {
-
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow start, " + city);
 
-        //http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=1&aqi=no&alerts=no
-        String url = String.format("http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=4&aqi=no&alerts=no", apiKey, city);
-        WeatherApiResponse dto = new WeatherApiResponse();
-        try{
-            Mono<WeatherApiResponse> responseMono = webClient.get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(WeatherApiResponse.class)
-                    .timeout(Duration.ofSeconds(20));
+        String url = String.format(
+                "http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=4&aqi=no&alerts=no",
+                apiKey, city
+        );
 
-            dto = responseMono.block();
-        } catch (Exception e) {
-            System.out.println(LocalDateTime.now() + "  ERROR: Service Weather getWeatherNow, " + city + " Error: " + e.getMessage());
-        }
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(WeatherApiResponse.class)
+                .timeout(Duration.ofSeconds(15))
+                .toFuture()
+                .thenCompose(dto -> {
+                    if (dto == null) {
+                        throw new RuntimeException("Получен пустой ответ от WeatherAPI");
+                    }
 
-        if (dto == null) {
-            throw new RuntimeException("Получен пустой ответ от WeatherAPI");
-        }
+                    WeatherNow weatherNow = new WeatherNow();
 
-        WeatherNow weatherNow = new WeatherNow();
+                    weatherNow.setCity(dto.getLocation().getName());
+                    weatherNow.setRegion(dto.getLocation().getRegion());
+                    weatherNow.setCountry(dto.getLocation().getCountry());
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " +
+                            weatherNow.getCity() + " " + weatherNow.getRegion() + " " + weatherNow.getCountry());
 
-        weatherNow.setCity(dto.getLocation().getName());
-        weatherNow.setRegion(dto.getLocation().getRegion());
-        weatherNow.setCountry(dto.getLocation().getCountry());
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getCity() + " " + weatherNow.getRegion() + " " + weatherNow.getCountry());
-        LocalDateTime time = LocalDateTime.parse(dto.getLocation().getLocaltime(), DATE_TIME_FORMATTER);
-        weatherNow.setDateTime(time);
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getDateTime());
+                    LocalDateTime time = LocalDateTime.parse(dto.getLocation().getLocaltime(), DATE_TIME_FORMATTER);
+                    weatherNow.setDateTime(time);
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getDateTime());
 
-        LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLast_updated(), DATE_TIME_FORMATTER);
-        weatherNow.setLastUpdateTime(lastTime);
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getLastUpdateTime());
-        weatherNow.setText(dto.getCurrent().getCondition().getText());
-        weatherNow.setIcon(dto.getCurrent().getCondition().getIcon());
-        weatherNow.setCode(dto.getCurrent().getCondition().getCode());
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getText() + " " + weatherNow.getIcon() + " " + weatherNow.getCode());
-        weatherNow.setTemp(dto.getCurrent().getTemp_c());
-        weatherNow.setFeelLike(dto.getCurrent().getFeelslike_c());
-        weatherNow.setSpeed(dto.getCurrent().getWind_kph());
-        weatherNow.setDir(dto.getCurrent().getWind_dir());
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getFeelLike() + " " + weatherNow.getSpeed() + " " + weatherNow.getDir());
-        System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow end, " + city);
+                    LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLast_updated(), DATE_TIME_FORMATTER);
+                    weatherNow.setLastUpdateTime(lastTime);
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getLastUpdateTime());
 
-        CompletableFuture<List<WeatherHour>> hoursFuture = getListWeatherHour(dto);
-        CompletableFuture<List<WeatherForecast>> forecastFuture = getListWeatherForecast(dto);
+                    weatherNow.setText(dto.getCurrent().getCondition().getText());
+                    weatherNow.setIcon(dto.getCurrent().getCondition().getIcon());
+                    weatherNow.setCode(dto.getCurrent().getCondition().getCode());
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " +
+                            weatherNow.getText() + " " + weatherNow.getIcon() + " " + weatherNow.getCode());
 
-        return hoursFuture.thenCombine(forecastFuture, (hours, forecasts) -> {
-            weatherNow.setListHour(hours);
-            weatherNow.setWeathersList(forecasts);
-            return weatherNow;
-        });
+                    weatherNow.setTemp(dto.getCurrent().getTemp_c());
+                    weatherNow.setFeelLike(dto.getCurrent().getFeelslike_c());
+                    weatherNow.setSpeed(dto.getCurrent().getWind_kph());
+                    weatherNow.setDir(dto.getCurrent().getWind_dir());
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " +
+                            weatherNow.getFeelLike() + " " + weatherNow.getSpeed() + " " + weatherNow.getDir());
+
+                    System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow end, " + city);
+
+                    CompletableFuture<List<WeatherHour>> hoursFuture = getListWeatherHour(dto);
+                    CompletableFuture<List<WeatherForecast>> forecastFuture = getListWeatherForecast(dto);
 
 
-
+                    return hoursFuture.thenCombine(forecastFuture, (hours, forecasts) -> {
+                        weatherNow.setListHour(hours);
+                        weatherNow.setWeathersList(forecasts);
+                        return weatherNow;
+                    });
+                })
+                .exceptionally(e -> {
+                    System.out.println(LocalDateTime.now() + "  ERROR: Service Weather getWeatherNow, " + city +
+                            " Error: " + e.getMessage());
+                    return null;
+                });
     }
+
     @Async("weatherExecutor")
+    @Override
     public CompletableFuture<List<WeatherHour>> getListWeatherHour(WeatherApiResponse dto){
         List<WeatherHour> list = new ArrayList<WeatherHour>();
         int i = 0;
@@ -161,6 +173,7 @@ public class WeatherNowServiceImpl implements WeatherService {
         return CompletableFuture.completedFuture(list);
     }
     @Async("weatherExecutor")
+    @Override
     public CompletableFuture<List<WeatherForecast>> getListWeatherForecast(WeatherApiResponse dto) {
 
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather getListWeatherForecast, " + dto.getLocation().getName());

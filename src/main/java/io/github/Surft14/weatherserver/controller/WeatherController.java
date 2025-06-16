@@ -25,22 +25,24 @@ public class WeatherController {
     private CityService cityService;
 
     @GetMapping("/get/fwa/city_apiKey/weather_now")
-    ///api/v1/weathers_now/get/fwa/city_apiKey/weather_now?city=London&apiKey=your_api_key
-    public CompletableFuture<WeatherNow> getWeatherNow(@RequestParam  String city, @RequestParam  String apiKey){
+    public CompletableFuture<WeatherNow> getWeatherNow(@RequestParam String city, @RequestParam String apiKey) {
         System.out.println(LocalDateTime.now() + "  INFO: Controller Weather getWeatherNow, " + city);
 
         return cityService.findTopByName(city).thenCompose(city1 -> {
+            CompletableFuture<Void> saveCityFuture = CompletableFuture.completedFuture(null);
             if (city1 == null) {
                 City tempCity = new City();
                 tempCity.setName(city);
-                cityService.saveCity(tempCity); // ❗нужно тоже сделать async
+                saveCityFuture = CompletableFuture.runAsync(() -> cityService.saveCity(tempCity));
             }
 
-            return weatherService.getWeatherNow(city, apiKey)
-                    .thenApply(weather -> {
-                        weatherService.saveWeatherNow(weather); // ❗лучше тоже сделать async
-                        return weather;
-                    });
+            return saveCityFuture.thenCompose(v ->
+                    weatherService.getWeatherNow(city, apiKey)
+                            .thenCompose(weather ->
+                                    CompletableFuture.runAsync(() -> weatherService.saveWeatherNow(weather))
+                                            .thenApply(v2 -> weather)
+                            )
+            );
         });
     }
     ///api/v1/weathers_now/get/db/city/weather_now?city=London
@@ -52,12 +54,28 @@ public class WeatherController {
                City tempCity = new City();
                tempCity.setName(city);
                cityService.saveCity(tempCity);
+               return weatherService.getWeatherNow(city, "e484c70c78e84b779ab151237251002")
+                       .thenApply(weatherNow -> {
+                           weatherService.saveWeatherNow(weatherNow);
+                           return weatherNow;
+                       });
+           } else{
+               System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findWeatherNow, loaded from DB: " + city);
+               return weatherService.findWeatherNow(city)
+                       .thenCompose(weatherNow -> {
+                           if (weatherNow == null) {
+                               System.out.println(LocalDateTime.now() + "  INFO: WeatherNow not found in DB, fetching from API: " + city);
+                               return weatherService.getWeatherNow(city, "e484c70c78e84b779ab151237251002")
+                                       .thenApply(w -> {
+                                           weatherService.saveWeatherNow(w);
+                                           return w;
+                                       });
+                           } else {
+                               System.out.println(LocalDateTime.now() + "  INFO: Loaded WeatherNow from DB: " + city);
+                               return CompletableFuture.completedFuture(weatherNow);
+                           }
+                       });
            }
-           return weatherService.getWeatherNow(city, "e484c70c78e84b779ab151237251002")
-                   .thenApply(weatherNow -> {
-               weatherService.saveWeatherNow(weatherNow);
-               return weatherNow;
-           });
         });
     }
     ///api/v1/weathers_now/get/weather_now?city=London
