@@ -85,7 +85,7 @@ public class WeatherNowServiceImpl implements WeatherService {
                 .uri(url)
                 .retrieve()
                 .bodyToMono(WeatherApiResponse.class)
-                .timeout(Duration.ofSeconds(15))
+                .timeout(Duration.ofSeconds(30))
                 .toFuture()
                 .thenCompose(dto -> {
                     if (dto == null) {
