@@ -1,19 +1,16 @@
 package io.github.Surft14.weatherserver.service.Impl;
 
-import io.github.Surft14.weatherserver.model.WeatherHour;
 import io.github.Surft14.weatherserver.model.WeatherForecast;
-import io.github.Surft14.weatherserver.model.api.WeatherApiResponse;
+import io.github.Surft14.weatherserver.model.WeatherHour;
 import io.github.Surft14.weatherserver.model.WeatherNow;
+import io.github.Surft14.weatherserver.model.api.WeatherApiResponse;
 import io.github.Surft14.weatherserver.repository.WeatherRepository;
 import io.github.Surft14.weatherserver.service.WeatherService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDate;
