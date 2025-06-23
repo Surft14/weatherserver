@@ -97,8 +97,10 @@ public class WeatherNowServiceImpl implements WeatherService {
                     System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " +
                             weatherNow.getCity() + " " + weatherNow.getRegion() + " " + weatherNow.getCountry());
 
-                    LocalDateTime time = LocalDateTime.parse(dto.getLocation().getLocaltime(), DATE_TIME_FORMATTER);
-                    weatherNow.setDateTime(time);
+                    LocalDateTime dateTime = LocalDateTime.parse(dto.getLocation().getLocaltime(), DATE_TIME_FORMATTER);
+                    weatherNow.setDateTime(dateTime);
+                    weatherNow.setDate(dateTime.toLocalDate());
+                    weatherNow.setTime(dateTime.toLocalTime());
                     System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherNow.getDateTime());
 
                     LocalDateTime lastTime = LocalDateTime.parse(dto.getCurrent().getLast_updated(), DATE_TIME_FORMATTER);
@@ -117,6 +119,10 @@ public class WeatherNowServiceImpl implements WeatherService {
                     weatherNow.setDir(dto.getCurrent().getWind_dir());
                     System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " +
                             weatherNow.getFeelLike() + " " + weatherNow.getSpeed() + " " + weatherNow.getDir());
+
+                    weatherNow.setTempF(dto.getCurrent().getTemp_f());
+                    weatherNow.setFeelLikeF(dto.getCurrent().getFeelslike_f());
+                    weatherNow.setSpeedM(dto.getCurrent().getWind_mph());
 
                     System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow end, " + city);
 
@@ -160,8 +166,11 @@ public class WeatherNowServiceImpl implements WeatherService {
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherHour.getText() + " " + weatherHour.getIcon() + " " + weatherHour.getCode());
             weatherHour.setTemp(hour.getTemp_c());
             weatherHour.setFeelLike(hour.getFeelslike_c());
+            weatherHour.setTempF(hour.getTemp_f());
+            weatherHour.setFeelLikeF(hour.getFeelslike_f());
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherHour.getTemp() + " " + weatherHour.getFeelLike());
             weatherHour.setSpeed(hour.getWind_kph());
+            weatherHour.setSpeedM(hour.getWind_mph());
             weatherHour.setDir(hour.getWind_dir());
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weatherHour.getSpeed() + " " + weatherHour.getDir());
 
@@ -190,6 +199,8 @@ public class WeatherNowServiceImpl implements WeatherService {
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weathers.getDate());
             weathers.setAvgTemp(forecastDay.getDay().getAvgtemp_c());
             weathers.setMaxWind(forecastDay.getDay().getMaxwind_kph());
+            weathers.setMaxWindM(forecastDay.getDay().getMaxwind_mph());
+            weathers.setAvgTempF(forecastDay.getDay().getAvgtemp_f());
             System.out.println(LocalDateTime.now() + "  INFO: Service Weather getWeatherNow, " + weathers.getAvgTemp() + " " + weathers.getMaxWind());
             weathers.setText(forecastDay.getDay().getCondition().getText());
             weathers.setIcon(forecastDay.getDay().getCondition().getIcon());

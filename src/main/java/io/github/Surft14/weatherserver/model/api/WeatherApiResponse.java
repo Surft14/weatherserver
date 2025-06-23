@@ -23,10 +23,13 @@ public class WeatherApiResponse {
     public static class Current {
         private String last_updated;
         private double temp_c;
+        private double temp_f;
         private Condition condition;
         private double wind_kph;
+        private double wind_mph;
         private String wind_dir;
         private double feelslike_c;
+        private double feelslike_f;
     }
 
     @Data
@@ -51,7 +54,9 @@ public class WeatherApiResponse {
     @Data
     public static class Day {
         private double avgtemp_c;
+        private double avgtemp_f;
         private double maxwind_kph;
+        private double maxwind_mph;
         private Condition condition;
     }
 
@@ -59,9 +64,12 @@ public class WeatherApiResponse {
     public static class Hour {
         private String time;
         private double temp_c;
+        private double temp_f;
         private Condition condition;
         private double wind_kph;
+        private double wind_mph;
         private String wind_dir;
         private double feelslike_c;
+        private double feelslike_f;
     }
 }
