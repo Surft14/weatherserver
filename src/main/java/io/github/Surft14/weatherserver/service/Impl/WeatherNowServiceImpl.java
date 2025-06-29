@@ -34,6 +34,36 @@ public class WeatherNowServiceImpl implements WeatherService {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
+    public CompletableFuture<List<WeatherNow>> findByDate(LocalDate date) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByDate, " + date);
+        return CompletableFuture.completedFuture(repository.findByDate(date));
+    }
+
+    @Override
+    public CompletableFuture<List<WeatherNow>> findByCityAndDate(String city, LocalDate date) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDate, " + city + " " + date);
+        return CompletableFuture.completedFuture(repository.findByCityAndDate(city, date));
+    }
+
+    @Override
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateAfter(String city, LocalDate date) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDateAfter, " + city + " " + date);
+        return CompletableFuture.completedFuture(repository.findByCityAndDateAfter(city, date));
+    }
+
+    @Override
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateBefore(String city, LocalDate date) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDateBefore, " + city + " " + date);
+        return CompletableFuture.completedFuture(repository.findByCityAndDateBefore(city, date));
+    }
+
+    @Override
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateBetween(String city, LocalDate start, LocalDate end) {
+        System.out.println(LocalDateTime.now() + "  INFO: Service Weather findByCityAndDateBefore, " + city + " " + start + " and " + end);
+        return CompletableFuture.completedFuture(repository.findByCityAndDateBetween(city, start, end));
+    }
+
+    @Override
     public CompletableFuture<WeatherNow> findWeatherNow(String city) {
         System.out.println(LocalDateTime.now() + "  INFO: Service Weather findWeatherNow, " + city);
         return CompletableFuture.completedFuture(repository.findTopByCityOrderByDateTimeDesc(city));

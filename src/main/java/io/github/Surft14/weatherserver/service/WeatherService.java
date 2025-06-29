@@ -6,12 +6,24 @@ import io.github.Surft14.weatherserver.model.WeatherNow;
 import io.github.Surft14.weatherserver.model.api.WeatherApiResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface WeatherService {
+
+    CompletableFuture<List<WeatherNow>> findByDate(LocalDate date);
+
+    CompletableFuture<List<WeatherNow>> findByCityAndDate(String city, LocalDate date);
+
+    CompletableFuture<List<WeatherNow>> findByCityAndDateAfter(String city, LocalDate date);
+
+    CompletableFuture<List<WeatherNow>> findByCityAndDateBefore(String city, LocalDate date);
+
+    CompletableFuture<List<WeatherNow>> findByCityAndDateBetween(String city, LocalDate start, LocalDate end);
+
     CompletableFuture<WeatherNow> findWeatherNow(String city);
 
     CompletableFuture<List<WeatherNow>> findByCity(String city);

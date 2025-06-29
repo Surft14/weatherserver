@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -83,6 +84,36 @@ public class WeatherController {
     public CompletableFuture<List<WeatherNow>> findByCity(@RequestParam String city) {
         System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCity, " + city);
         return weatherService.findByCity(city);
+    }
+
+    @GetMapping("/get/db/date/list_weather")
+    public CompletableFuture<List<WeatherNow>> findByDate(@RequestParam LocalDate date){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCityAndDate, " + date);
+        return weatherService.findByDate(date);
+    }
+
+    @GetMapping("/get/db/city/date/list_weather")
+    public CompletableFuture<List<WeatherNow>> findByCityAndDate(@RequestParam String city, @RequestParam LocalDate date){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCityAndDate, " + date + " and " + city);
+        return weatherService.findByCityAndDate(city, date);
+    }
+
+    @GetMapping("get/db/city/date/after")
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateAfter(@RequestParam String city, @RequestParam LocalDate date){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCityAndDateAfter, " + date + " and " + city);
+        return weatherService.findByCityAndDateAfter(city, date);
+    }
+
+    @GetMapping("get/db/city/date/before")
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateBefore(@RequestParam String city, @RequestParam LocalDate date){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCityAndDateBefore, " + date + " and " + city);
+        return weatherService.findByCityAndDateBefore(city, date);
+    }
+
+    @GetMapping("get/db/city/date/between")
+    public CompletableFuture<List<WeatherNow>> findByCityAndDateBetween(@RequestParam String city, @RequestParam LocalDate start, @RequestParam LocalDate end){
+        System.out.println(LocalDateTime.now() + "  INFO: Controller Weather findByCityAndDateBefore, " + start +" "+ end + " and " + city);
+        return weatherService.findByCityAndDateBetween(city, start, end);
     }
 
     @GetMapping("/get/db/city_time/list_weather_now")
